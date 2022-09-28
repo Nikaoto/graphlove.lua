@@ -1,5 +1,6 @@
 # graphlove.lua
 A small and simple graphing library for Love2D.
+
 ![graphlove screenshot](./graphlove-screenshot.png)
 
 The simplicity comes from eschewing antialiasing and infinite precision.
