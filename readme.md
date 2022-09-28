@@ -4,8 +4,8 @@ A small and simple graphing library for Love2D.
 ![graphlove screenshot](./graphlove-screenshot.png)
 
 The simplicity comes from eschewing antialiasing and infinite precision.
-Graphlove doesn't grapha function, instead it takes an array of points and maps
-them onto the screen.
+Graphlove doesn't graph a function itself, instead it takes an array of points
+and maps them onto the screen.
 
 ## Usage
 It's as easy as the following:
@@ -46,18 +46,22 @@ It's as easy as the following:
 
 ### Interactive example
 I highly recommend reading `example/main.lua` to see a slightly more complex use case.
-To run the provided example, stand on the base directory and do:
+You can run the included example with:
 ```
-love example/
+$ love example/
 ```
 
-### Points & a hyperbola
-Here is graphlove drawing a cluster of points along with `f(x) = 1/x`:
+And this is what it should look like, two hyperbolae with a random cluster of
+points around each of them:
+
 ![graphlove animation](./graphlove-anim.gif)
+
+That's me scrolling and scaling the graph, which you can also do using hjkl and
+the arrow keys.
 
 ### Drawing the logo
 To draw the graphs from the first screenshot, I used the following curves:
-```
+```lua
 function gen_points(from, to, int, fn)
    local pts = {}
    for x=from, to, int do
@@ -94,8 +98,9 @@ curves = {
 }
 ```
 
-I use graphlove in my neural network library's example to show how it
-approximates a function: http://github.com/Nikaoto/nn
+### Other examples
+I use graphlove in one of the examples of my neural network library to show how
+the model slowly approximates a function: http://github.com/Nikaoto/nn
 
 ## License (3-clause BSD)
 ```
