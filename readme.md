@@ -7,7 +7,7 @@ The simplicity comes from eschewing antialiasing and infinite precision.
 Graphlove doesn't grapha function, instead it takes an array of points and maps
 them onto the screen.
 
-# Usage
+## Usage
 It's as easy as the following:
 
 - Drop `graphlove.lua` into your project and require it:
@@ -43,14 +43,56 @@ It's as easy as the following:
    ```
 
 ## Examples
+
+### Interactive example
 I highly recommend reading `example/main.lua` to see a slightly more complex use case.
 To run the provided example, stand on the base directory and do:
 ```
 love example/
 ```
 
+### Points & a hyperbola
 Here is graphlove drawing a cluster of points along with `f(x) = 1/x`:
 ![graphlove animation](./graphlove-anim.gif)
+
+### Drawing the logo
+To draw the graphs from the first screenshot, I used the following curves:
+```
+function gen_points(from, to, int, fn)
+   local pts = {}
+   for x=from, to, int do
+      table.insert(pts, x)
+      table.insert(pts, fn(x))
+   end
+   return pts
+end
+
+curves = {
+   {
+      color = {64/255, 224/225, 208/255, 1},
+      points = gen_points(-20, 20, 0.001, function(x)
+         return x^3 * 0.6
+      end)
+   },
+   {
+      color = {1, 1, 1, 1},
+      points = gen_points(-20, 20, 0.01, math.sin)
+   },
+   {
+      color = {1, 215/255, 0, 1},
+      points = gen_points(-20, 20, 0.0001, function(x)
+         return math.exp(x/2)^math.cos(x) * 2 - 3.5
+      end)
+   },
+   {
+      color = {0.8, 120/255, 230/255, 1},
+      points = gen_points(-20, 20, 0.0001, function(x)
+      local x = math.abs(x)
+         return x^math.sin(x^math.cos(x)) + 2.5
+      end)
+   }
+}
+```
 
 I use graphlove in my neural network library's example to show how it
 approximates a function: http://github.com/Nikaoto/nn
