@@ -105,7 +105,7 @@ curves = {
 
 ### Other examples
 I use graphlove in one of the examples of my neural network library to show how
-the model slowly approximates a function: http://github.com/Nikaoto/nn
+the model slowly approximates a function: http://github.com/Nikaoto/nn.lua
 
 ## License (3-clause BSD)
 ```
