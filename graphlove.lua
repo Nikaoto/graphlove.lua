@@ -41,41 +41,60 @@ local pow = math.pow
 local sqrt = math.sqrt
 local floor = math.floor
 
--- Draw the crossings (unit markers) on the axes
-local function draw_vert_crossing(x, y, length, girth)
-   local h = length
-   local w = girth
-
-   lg.rectangle("fill", x-w/2, y-h/2, w, h)
-end
-local function draw_horiz_crossing(x, y, length, girth)
-   local w = length
-   local h = girth
-
-   lg.rectangle("fill", x-w/2, y-h/2, w, h)
-end
-
--- Returns new graph table.
+-- Returns new graph table for use with other graphlove functions.
 function gl.new(opts)
    local graph = {
+      -- Prints info at the top-left of the graph.
       print_info = opts.print_info or false,
-      plane_ox = opts.plane_ox or 0,
-      plane_oy = opts.plane_oy or 0,
+
+      -- Offset of the origin (0,0).
       x_off = opts.x_off or 205,
       y_off = opts.y_off or 350,
-      y_scale = opts.y_scale or 40,
+
+      -- Horizontal and vertical scale, used for zooming in/out.
       x_scale = opts.x_scale or 40,
+      y_scale = opts.y_scale or 40,
+
+      -- The size of the crossings (unit markers) on the axes.
       crossing_girth = opts.crossing_girth or 1,
       crossing_length = opts.crossing_length or 10,
+
+      -- You can guess what these do :-)
       x_axis_color = opts.x_axis_color or {1, 0, 0, 1},
       y_axis_color = opts.y_axis_color or {0, 0, 1, 1},
       crossing_color = opts.crossing_color or {1, 0, 1, 0.9},
+      print_color = opts.print_color or {1, 1, 1, 1},
+
+      -- These two exist to allow for distinguishing between significantly
+      -- zoomed-in or zoomed-out graphs. For example, if you set the threshold
+      -- to 1 and set x or y scale to anything between 0 and 1, you'll see that
+      -- the unit markers will have changed their color to alt_crossing color.
       alt_crossing_color = opts.alt_crossing_color or {1, 0.27, 0, 0.9},
       scale_color_change_threshold = opts.scale_color_change_threshold or 1,
+
+      -- Used in tandem with the two above, simply to increase/decrease the
+      -- frequency of the unit markers once the threshold is crossed.
       magnified_scale_mult = opts.magnified_scale_mult or 100,
+
+      -- This is a table of all the curves for this graph.
+      -- A curve has color, radius (width of the points) and a table of points:
+      -- {
+      --    -- A flat table of points.
+      --    points = {x1, y1, x2, y2, x3, ...},
+      --
+      --    -- Color of the points, defaults to white. Optional.
+      --    color = {R, G, B, A},
+      --
+      --    -- The width of each point. Is 1 by default. Optional.
+      --    radius = 1,
+      --}
       curves = opts.curves,
+
+      -- The location of the graph on the screen
       x = opts.x or 0,
       y = opts.y or 0,
+
+      -- Width/height of the graph in screenspace
       width = opts.width or 800,
       height = opts.height or 600,
    }
@@ -105,9 +124,23 @@ function gl.update(graph)
    end
 end
 
+-- Draw the crossings (unit markers) on the axes
+local function draw_vert_crossing(x, y, length, girth)
+   local h = length
+   local w = girth
+
+   lg.rectangle("fill", x-w/2, y-h/2, w, h)
+end
+local function draw_horiz_crossing(x, y, length, girth)
+   local w = length
+   local h = girth
+
+   lg.rectangle("fill", x-w/2, y-h/2, w, h)
+end
+
 function gl.draw(graph)
    local g = graph
- 
+
    -- Draw y axis if visible
    if (g.x_off >= 0 and g.x_off <= g.width) then
       lg.setColor(g.y_axis_color)
@@ -189,7 +222,7 @@ function gl.draw(graph)
 
    -- Print stats
    if g.print_info then
-      lg.setColor(1, 1, 1, 1)
+      lg.setColor(g.print_color)
       local str = string.format(
          "x_scale = %.4f\ny_scale = %.4f\nx_off = %i\ny_off = %i",
          g.x_scale, g.y_scale, g.x_off, g.y_off)
@@ -231,8 +264,7 @@ function gl.do_easy_controls(graph, dt, keys)
    if not keys then keys = {} end
    setmetatable(keys, {__index = default_keys})
 
-   local recalc_points = false
-
+   -- Deltas
    local scale_dx, scale_dy = 0, 0
    local off_dx, off_dy = 0, 0
 
@@ -268,11 +300,10 @@ function gl.do_easy_controls(graph, dt, keys)
    end
    graph.y_off = graph.y_off + off_dy
 
-   recalc_points = recalc_points or
-                   off_dx ~= 0 or off_dy ~= 0 or
-                   scale_dx ~= 0 or scale_dy ~= 0
-
-   if recalc_points then
+   -- Update graph if necessary
+   local should_update_graph = off_dx ~= 0 or off_dy ~= 0 or
+                               scale_dx ~= 0 or scale_dy ~= 0
+   if should_update_graph then
       graphlove.update(graph)
    end
 end

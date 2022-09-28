@@ -21,7 +21,7 @@ function love.load()
 
    -- Create a new graph
    graph = graphlove.new({
-         print_info = false,
+         print_info = true,
          width = WIN_WIDTH,
          height = WIN_HEIGHT,
          x_off = 350,

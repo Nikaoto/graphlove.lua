@@ -42,6 +42,11 @@ It's as easy as the following:
    end
    ```
 
+## Documentation
+Read the examples section for an introduction. Then just read the code:
+[`graphlove.lua`](./graphlove.lua). Seriously. It's thoroughly commented and
+written to be as simple as possible at around 300 lines.
+
 ## Examples
 
 ### Interactive example
