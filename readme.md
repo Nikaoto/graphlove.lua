@@ -1,5 +1,5 @@
 # graphlove.lua
-A small and simple graphing library for Love2D.
+Small and simple graphing library for Love2D in a single lua file.
 
 ![graphlove screenshot](./graphlove-screenshot.png)
 
