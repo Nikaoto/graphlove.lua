@@ -49,11 +49,13 @@ written to be as simple as possible at around 300 lines.
 
 ## Examples
 
-### Interactive example
-I highly recommend reading `example/main.lua` to see a slightly more complex use case.
+### Interactive examples
+
+#### The simple example
+I highly recommend reading `examples/simple/main.lua` to see a slightly more complex use case.
 You can run the included example with:
 ```
-$ love example/
+$ love examples/simple/
 ```
 
 And this is what it should look like, two hyperbolae with a random cluster of
@@ -63,6 +65,19 @@ points around each of them:
 
 That's me scrolling and scaling the graph, which you can also do using hjkl and
 the arrow keys.
+
+#### Gradient descent
+To run the second example, do:
+```
+$ love examples/grad-descent/
+```
+
+![grad-descent animation](./grad-descent.gif)
+
+It picks a random point on a graph and using 'space' (tapping or holding it
+down) you can go though a single iteration of gradient descent and see the slope
+chaning as it reaches a local minimum. Press 'r' to create a new random point.
+The graph scrolling/scaling controls also apply.
 
 ### Drawing the logo
 To draw the graphs from the first screenshot, I used the following curves:
