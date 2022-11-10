@@ -111,7 +111,7 @@ curves = {
    {
       color = {0.8, 120/255, 230/255, 1},
       points = gen_points(-20, 20, 0.0001, function(x)
-      local x = math.abs(x)
+         local x = math.abs(x)
          return x^math.sin(x^math.cos(x)) + 2.5
       end)
    }
