@@ -102,6 +102,37 @@ function gl.new(opts)
    return graph
 end
 
+local function lerp(a, b, x) return a + (b - a) * x end
+
+-- Create more points by linearly interpolating between each point in the array
+-- to give the graph a more "fluid" feel.
+-- The smaller the step, the more granularity and "smoothness" to the graph.
+function gl.lerp_points(points, step)
+   assert(step > 0)
+
+   local new_points = {}
+   for i=1, #points - 2, 2 do
+      local x1 = points[i]
+      local y1 = points[i+1]
+      local x2 = points[i+2]
+      local y2 = points[i+3]
+
+      table.insert(new_points, x1)
+      table.insert(new_points, y1)
+
+      for x=x1+step, x2, step do
+         table.insert(new_points, x)
+         table.insert(new_points, lerp(y1, y2, (x1-x)/(x2-x1)))
+      end
+   end
+
+   -- Last two points
+   table.insert(new_points, points[#points-1])
+   table.insert(new_points, points[#points])
+
+   return new_points
+end
+
 -- Remap all points according to the scale and offset. Should be called after
 -- any changes have been made to the curves passed to the graph.
 function gl.update(graph)
@@ -206,6 +237,19 @@ function gl.draw(graph)
    for _, curve in ipairs(g.curves) do
       lg.setColor(curve.color or {1, 1, 1, 1})
 
+      if curve.type == "vertical_line" then
+         for i=1, #curve.raw_points, 2 do
+            lg.rectangle(
+               "fill",
+               curve.raw_points[i],
+               g.y,
+               curve.radius,
+               g.height
+            )
+         end
+         goto continue
+      end
+
       -- Draw circles if point radius given
       if curve.radius and curve.radius > 1 then
          for i=1, #curve.raw_points, 2 do
@@ -218,6 +262,8 @@ function gl.draw(graph)
       else  -- Draw points otherwise
          lg.points(curve.raw_points)
       end
+
+      ::continue::
    end
 
    -- Print stats
@@ -256,6 +302,7 @@ local default_keys = {
    move_right   = "right",
    move_up      = "up",
    move_down    = "down",
+   speed_up     = "lshift",
 }
 
 -- Make the graph interactive.
@@ -263,6 +310,8 @@ local default_keys = {
 function gl.do_easy_controls(graph, dt, keys)
    if not keys then keys = {} end
    setmetatable(keys, {__index = default_keys})
+
+   local spd = love.keyboard.isDown(keys.speed_up)
 
    -- Deltas
    local scale_dx, scale_dy = 0, 0
@@ -290,7 +339,7 @@ function gl.do_easy_controls(graph, dt, keys)
    elseif love.keyboard.isDown(keys.move_right) then
       off_dx = get_offset_delta(graph.x_off, dt, -1)
    end
-   graph.x_off = graph.x_off + off_dx
+   graph.x_off = graph.x_off + off_dx * (spd and 10 or 1)
 
    -- Move y_off
    if love.keyboard.isDown(keys.move_up) then
@@ -298,7 +347,7 @@ function gl.do_easy_controls(graph, dt, keys)
    elseif love.keyboard.isDown(keys.move_down) then
       off_dy = get_offset_delta(graph.y_off, dt, -1)
    end
-   graph.y_off = graph.y_off + off_dy
+   graph.y_off = graph.y_off + off_dy * (spd and 10 or 1)
 
    -- Update graph if necessary
    local should_update_graph = off_dx ~= 0 or off_dy ~= 0 or
