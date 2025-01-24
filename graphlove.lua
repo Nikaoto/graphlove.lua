@@ -122,7 +122,7 @@ function gl.lerp_points(points, step)
 
       for x=x1+step, x2, step do
          table.insert(new_points, x)
-         table.insert(new_points, lerp(y1, y2, (x1-x)/(x2-x1)))
+         table.insert(new_points, lerp(y1, y2, (x-x1)/(x2-x1)))
       end
    end
 
